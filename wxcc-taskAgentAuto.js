@@ -145,13 +145,13 @@ function oe() {
         configurable: !0
       });
     }
-    function W() {
+    function L() {
       var e = c(this.type);
       return C[e] || (C[e] = !0, console.error(
         "Accessing element.ref was removed in React 19. ref is now a regular prop. It will be removed from the JSX Element type in a future release."
       )), e = this.props.ref, e !== void 0 ? e : null;
     }
-    function M(e, r, t, n, i, l, O, h) {
+    function M(e, r, t, n, i, l, w, g) {
       return t = l.ref, e = {
         $$typeof: j,
         type: e,
@@ -160,7 +160,7 @@ function oe() {
         _owner: i
       }, (t !== void 0 ? t : null) !== null ? Object.defineProperty(e, "ref", {
         enumerable: !1,
-        get: W
+        get: L
       }) : Object.defineProperty(e, "ref", { enumerable: !1, value: null }), e._store = {}, Object.defineProperty(e._store, "validated", {
         configurable: !1,
         enumerable: !1,
@@ -175,15 +175,15 @@ function oe() {
         configurable: !1,
         enumerable: !1,
         writable: !0,
-        value: O
+        value: w
       }), Object.defineProperty(e, "_debugTask", {
         configurable: !1,
         enumerable: !1,
         writable: !0,
-        value: h
+        value: g
       }), Object.freeze && (Object.freeze(e.props), Object.freeze(e)), e;
     }
-    function g(e, r, t, n, i, l, O, h) {
+    function h(e, r, t, n, i, l, w, g) {
       var a = r.children;
       if (a !== void 0)
         if (n)
@@ -216,8 +216,8 @@ React keys must be passed directly to JSX without using spread:
       }
       if (a = null, t !== void 0 && (o(t), a = "" + t), E(r) && (o(r.key), a = "" + r.key), "key" in r) {
         t = {};
-        for (var w in r)
-          w !== "key" && (t[w] = r[w]);
+        for (var O in r)
+          O !== "key" && (t[O] = r[O]);
       } else t = r;
       return a && _(
         t,
@@ -229,8 +229,8 @@ React keys must be passed directly to JSX without using spread:
         i,
         s(),
         t,
-        O,
-        h
+        w,
+        g
       );
     }
     function S(e) {
@@ -250,7 +250,7 @@ React keys must be passed directly to JSX without using spread:
     )(), I = A(f(u)), $ = {};
     b.Fragment = v, b.jsx = function(e, r, t, n, i) {
       var l = 1e4 > k.recentlyCreatedOwnerStacks++;
-      return g(
+      return h(
         e,
         r,
         t,
@@ -262,7 +262,7 @@ React keys must be passed directly to JSX without using spread:
       );
     }, b.jsxs = function(e, r, t, n, i) {
       var l = 1e4 > k.recentlyCreatedOwnerStacks++;
-      return g(
+      return h(
         e,
         r,
         t,
@@ -275,12 +275,12 @@ React keys must be passed directly to JSX without using spread:
     };
   })()), b;
 }
-var L;
+var W;
 function se() {
-  return L || (L = 1, process.env.NODE_ENV === "production" ? T.exports = ae() : T.exports = oe()), T.exports;
+  return W || (W = 1, process.env.NODE_ENV === "production" ? T.exports = ae() : T.exports = oe()), T.exports;
 }
 var x = se();
-const le = () => (te(() => {
+const ce = () => (te(() => {
   console.log("wxcc-taskAgentAuto iniciado");
   const c = ne.media, d = c.onTaskNotification(async (o) => {
     if (o.status === "new" && o.mediaType === "chat") {
@@ -297,6 +297,7 @@ const le = () => (te(() => {
   /* @__PURE__ */ x.jsx("h3", { children: "wxcc-taskAgentAuto" }),
   /* @__PURE__ */ x.jsx("p", { children: "Las tareas de chat/WhatsApp se aceptarán automáticamente." })
 ] }));
+window.registerWidget?.("wxcc-taskagentauto", ce);
 export {
-  le as default
+  ce as default
 };
