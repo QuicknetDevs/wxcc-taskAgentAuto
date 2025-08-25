@@ -5,15 +5,13 @@ export default defineConfig({
   plugins: [react()],
   build: {
     outDir: "dist",
-    emptyOutDir: true,
     rollupOptions: {
       input: "src/main.tsx",
       output: {
-        format: "iife",                // IIFE para Desktop Layout
-        name: "wxccTaskAgentAuto",     // nombre global
+        format: "iife",                   // para Desktop Layout
+        name: "wxccTaskAgentAuto",        // nombre global
         entryFileNames: "wxcc-taskAgentAuto.js",
       },
-      external: [], // React/ReactDOM incluidos en el bundle
     },
   },
 });

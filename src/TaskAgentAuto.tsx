@@ -24,9 +24,9 @@ const TaskAgentAuto: React.FC = () => {
   return null; // invisible
 };
 
-// 🔹 Exponer React y ReactDOM globalmente
+// 🔹 React y ReactDOM disponibles globalmente
 (window as any).React = React;
 (window as any).ReactDOM = ReactDOM;
 
-// 🔹 Registrar widget globalmente
+// 🔹 Registrar widget inmediatamente
 (window as any).registerWidget?.("wxcc-taskagentauto", TaskAgentAuto);
