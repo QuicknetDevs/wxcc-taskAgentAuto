@@ -1,74 +1,53 @@
 import React, { useEffect, useState } from "react";
-import { Desktop } from "@wxcc-desktop/sdk";
+import webex from '@webex/contact-center'
+
+// ⚠️ Asegúrate de tener cargado el SDK en tu layout (ej. window.webex.cc disponible)
+declare global {
+  interface Window {
+    webex: any;
+  }
+}
 
 const TaskAgentAuto: React.FC = () => {
-  const [offers, setOffers] = useState<any[]>([]); // contactos ofrecidos
-  const [accepted, setAccepted] = useState<any[]>([]); // contactos aceptados
+  const [activeCount, setActiveCount] = useState(0);
 
   useEffect(() => {
-    // ⚡ Suscribirse a nuevos contactos ofrecidos
-    const handleOffer = (contact: any) => {
-      console.log("Nuevo contacto ofrecido:", contact);
-      setOffers((prev) => [...prev, contact]);
+    if (!window.webex?.cc) {
+      console.error("Webex CC SDK no está disponible en window.webex");
+      return;
+    }
+
+    const handleTaskIncoming = (task: any) => {
+      console.log("👉 Nuevo task entrante:", task);
+      setActiveCount((c) => c + 1);
     };
 
-    // El evento eAgentOffer se dispara para omnichannel (chats, mensajes, etc.)
-    (Desktop.actions as any).on("eAgentOffer", handleOffer);
+    const handleTaskHydrate = (task: any) => {
+      console.log("👉 Task restaurado (hydrate):", task);
+      setActiveCount((c) => c + 1);
+    };
 
-    // Cleanup al desmontar
+    const handleTaskEnded = (task: any) => {
+      console.log("👋 Task finalizado:", task);
+      setActiveCount((c) => Math.max(0, c - 1));
+    };
+
+    // Registrar eventos del Webex Web SDK
+    window.webex.cc.on("task:incoming", handleTaskIncoming);
+    window.webex.cc.on("task:hydrate", handleTaskHydrate);
+    window.webex.cc.on("task:ended", handleTaskEnded);
+
     return () => {
-      (Desktop.actions as any).off("eAgentOffer", handleOffer);
+      window.webex.cc.off("task:incoming", handleTaskIncoming);
+      window.webex.cc.off("task:hydrate", handleTaskHydrate);
+      window.webex.cc.off("task:ended", handleTaskEnded);
     };
   }, []);
 
-  const acceptOffer = async (contact: any) => {
-    try {
-      await (Desktop.agentContact as any).accept({
-        interactionId: contact.interactionId,
-      });
-
-      setAccepted((prev) => [...prev, contact]);
-      setOffers((prev) =>
-        prev.filter((c) => c.interactionId !== contact.interactionId)
-      );
-    } catch (err) {
-      console.error("Error aceptando contacto:", err);
-    }
-  };
-
   return (
-    <div className="p-4 rounded-xl shadow-md bg-white">
-      <h2 className="text-lg font-bold mb-2">TaskAgentAuto Widget</h2>
-
-      <div className="mb-4">
-        <h3 className="font-semibold">Ofertas de contacto:</h3>
-        <ul className="list-disc ml-5">
-          {offers.map((c, i) => (
-            <li key={i}>
-              {c.interactionId} - {c.type || "desconocido"}{" "}
-              <button
-                onClick={() => acceptOffer(c)}
-                className="bg-green-500 text-white px-2 py-1 rounded ml-2"
-              >
-                Aceptar
-              </button>
-            </li>
-          ))}
-          {offers.length === 0 && <li>No hay ofertas pendientes</li>}
-        </ul>
-      </div>
-
-      <div className="mb-4">
-        <h3 className="font-semibold">Contactos aceptados:</h3>
-        <ul className="list-disc ml-5">
-          {accepted.map((c, i) => (
-            <li key={i}>
-              {c.interactionId} - {c.type || "desconocido"}
-            </li>
-          ))}
-          {accepted.length === 0 && <li>No hay contactos aceptados</li>}
-        </ul>
-      </div>
+    <div className="p-4 border rounded-xl shadow">
+      <h2 className="text-lg font-bold mb-2">WXCC Auto Task Handler</h2>
+      <p>📊 Tareas activas: {activeCount}</p>
     </div>
   );
 };
