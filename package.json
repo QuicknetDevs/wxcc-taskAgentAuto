@@ -9,7 +9,7 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
-    "@webex/contact-center": "^3.8.1-next.37",
+    "@webex/contact-center": "^3.8.1-next.38",
     "@wxcc-desktop/sdk": "^2.0.10",
     "@wxcc-desktop/sdk-types": "^1.0.24",
     "react": "^18.3.1",
