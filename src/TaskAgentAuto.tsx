@@ -29,6 +29,7 @@ const TaskAgentAuto: React.FC = () => {
 
   // --- helpers ---
   const snapshotAgentInfo = () => {
+    // Lee el último estado conocido del SDK y normaliza a string
     const latest = (Desktop.agentStateInfo as any)?.latestData || {};
     setAgent({
       subStatus: latest.subStatus ?? "",
@@ -40,28 +41,33 @@ const TaskAgentAuto: React.FC = () => {
   };
 
   useEffect(() => {
+    // Init JSAPI (con widgetName y widgetProvider obligatorios)
     if (!initedRef.current) {
       try {
-        // ✅ Desactiva RTDWC para evitar el warning "issue in loading rtdwc"
-        Desktop.config({
+        Desktop.config.init({
           widgetName: "TaskAgentAuto",
           widgetProvider: "QuickNet",
-          features: { rtdwc: false },
         });
       } catch (e) {
-        console.warn("Desktop.config init error (ignorable):", e);
+        // Evita romper el render si el init vuelve a llamarse
+        console.warn("Desktop.config.init error (ignorable if already inited):", e);
       }
       initedRef.current = true;
     }
 
-    // Snapshot inicial del estado del agente
+    // Toma estado inicial
     snapshotAgentInfo();
 
-    // Refresco periódico del estado (cada 3s)
-    const refreshId = window.setInterval(snapshotAgentInfo, 3000);
+    // Refresh periódico por si el estado cambia desde el nativo
+    const refreshId = window.setInterval(() => {
+      // Si el SDK mantiene latestData actualizado, esto es suficiente.
+      // Si tu versión tiene fetchLatestData(), podrías llamarlo aquí en try/catch.
+      snapshotAgentInfo();
+    }, 3000);
 
-    // Escucha eventos de oferta de contacto
+    // Suscribe al ofrecimiento de interacción
     const onOffer = (msg: any) => {
+      // Intentamos obtener interactionId / mediaType de distintas rutas comunes
       const interactionId =
         msg?.data?.interaction?.interactionId ??
         msg?.data?.interactionId ??
@@ -82,7 +88,7 @@ const TaskAgentAuto: React.FC = () => {
         },
         ...prev,
       ]);
-
+      // También actualizamos un snapshot del estado por si cambió on-offer
       snapshotAgentInfo();
     };
 
@@ -95,9 +101,12 @@ const TaskAgentAuto: React.FC = () => {
     return () => {
       window.clearInterval(refreshId);
       try {
+        // Si tu SDK soporta removeEventListener:
+        // @ts-ignore
         Desktop.agentContact.removeEventListener?.("eAgentOfferContact", onOffer);
       } catch {
-        /* noop */
+        /* algunas versiones solo tienen removeAllEventListeners() a nivel global;
+           no la usamos aquí para no afectar otros widgets */
       }
     };
   }, []);
@@ -106,7 +115,7 @@ const TaskAgentAuto: React.FC = () => {
     <div className="p-4 bg-gray-50 rounded-xl shadow-md space-y-4">
       <h2 className="text-xl font-bold">Task Agent Auto</h2>
 
-      {/* Info del Agente */}
+      {/* Info de Agente */}
       <div className="bg-white rounded-lg p-4 shadow">
         <h3 className="font-semibold mb-2">Agent Info</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-sm">
